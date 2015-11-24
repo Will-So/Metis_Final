@@ -1,10 +1,9 @@
-#!/usr/bin/python
-
+#!/home/andy/anaconda/bin/python
 import random
 import sys
-import pandas as pd
+#import pandas as pd
 from Queue import Queue
-from multiprocessing import Process 
+from multiprocessing import Process
 import time
 from pymongo import MongoClient
 import pymongo
@@ -24,7 +23,7 @@ class Worker(Process):
         Process.__init__(self)
         self.socks_proxy_port = socks_proxy_port
         self.base_control_port = base_control_port
-        self.conn = MongoClient(MONGODB_HOSTNAME, 27017)
+        self.conn = MongoClient(MONGODB_HOSTNAME, 27017,connect=False )
         self.db = self.conn.Zillow
         self.coll = self.db.zip_codes
         self.zip_code = zip_code
@@ -41,7 +40,7 @@ class Worker(Process):
             #from here pass the opener connection to Scraper 
             #which will update the housing database
             Scraper(self.opener,self.zip_code)
-            self.coll.update({'zip_code':zip_code}, {'$set': {'finished':1}})
+            self.coll.update({'zip_code':self.zip_code}, {'$set': {'finished':1}})
             self.conn.close()
 
         except:
@@ -54,17 +53,21 @@ class Discovery:
     BaseControlPort = 8118
     Contention = 10000
 
-    def __init__(self):
+    def __init__(self,NWorkers):
         
         self.conn = MongoClient(MONGODB_HOSTNAME, 27017)
         self.db = self.conn.Zillow
         self.coll = self.db.zip_codes
+        Discovery.NWorkers = NWorkers
         
         self.queue = Queue()
         
         # add items into queue
         for item in self.coll.find({'finished': {'$ne': 1}}):
             self.queue.put(item['zip_code'])
+        
+        #close the mongo connection
+        self.conn.close()
 
     def start(self):
         """
@@ -83,9 +86,10 @@ class Discovery:
             for w in self.workers:
                 w.join()
 
-def main():
-    discovery = Discovery()
+def main(NWorkers = 100):
+    print type(NWorkers),NWorkers
+    discovery = Discovery(int(NWorkers))
     discovery.start()
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1])
