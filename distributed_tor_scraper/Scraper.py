@@ -4,7 +4,7 @@ from pymongo import MongoClient
 from time import sleep
 
 def pass_function(br,url='http://www.zillow.com',html=None):
-    """
+    """                                                                      
     Test to see if the program will get pass the url ROBOTS test
     """
     try:
@@ -12,7 +12,7 @@ def pass_function(br,url='http://www.zillow.com',html=None):
             r = br.open(url)
             html = r.read()
         soup = BeautifulSoup(html)
-        return len(soup.findAll("meta", { "name" : "ROBOTS" }))!=1
+        return len(soup.findAll("div", { "class" : "captcha-container" }))!=1
     except:
         return False
 
@@ -153,7 +153,7 @@ class Scraper(object):
             # Look up if already in the database
             if self._housing_description.find_one({'url':url})==None:
                 try:
-                    print 'trying to get ', url
+                    print url
                     html = self._tor.request(url)
                     self._housing_description.insert(self._scrape(html,url))
                     self._housing_description_gathered.append(url)
