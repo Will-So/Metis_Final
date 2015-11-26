@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Nworkers=150
+Nworkers=300
 base_socks_port=9050
 base_control_port=8118
 password=16:CD7A0F54BD5C0B22608D19978758FF0491B142F42974123180090E62C2
@@ -28,4 +28,4 @@ do
     tor --RunAsDaemon 1 --CookieAuthentication 0 --HashedControlPassword $password --ControlPort $control_port --PidFile tor$i.pid --SocksPort $socks_port --DataDirectory data/tor$i
 done
 
-/home/andy/ds/Metis_Final/distributed_tor_scraper/distributed_tor_scraper.py $Nworkers
+./distributed_tor_scraper.py $Nworkers

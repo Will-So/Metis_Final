@@ -47,7 +47,7 @@ class UseTor(object):
                 controller.signal(Signal.NEWNYM)
                 sleep(controller.get_newnym_wait())
                 controller.close()
-
+            
                 
             # reset the browser and its settings by calling a new one
             self._br.close()

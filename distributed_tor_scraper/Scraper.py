@@ -156,7 +156,6 @@ class Scraper(object):
                     print url
                     html = self._tor.request(url)
                     self._housing_description.insert(self._scrape(html,url))
-                    self._housing_description_gathered.append(url)
                     sleep(1)
                 except:
                     ## scrape failed
