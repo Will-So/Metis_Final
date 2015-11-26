@@ -1,2 +1,8 @@
 # data created by tor files
 /distributed_tor_scraper/data
+# ignore .pyc files
+*.pyc
+# ignore ipython checkpoints
+*.ipynb_checkpoints/
+# ignore emacs temp files
+*~
