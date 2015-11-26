@@ -1,4 +1,4 @@
-#!~/anaconda/bin/python
+#!/home/andy/anaconda/bin/python
 import random
 import sys
 from multiprocessing import Process,Queue
