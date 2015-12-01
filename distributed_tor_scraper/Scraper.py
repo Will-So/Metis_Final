@@ -2,6 +2,8 @@ import scrapezillow.scraper as scraper
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from time import sleep
+import re
+from scrapezillow import constants
 
 def pass_function(br,url='http://www.zillow.com',html=None):
     """                                                                      
@@ -31,7 +33,38 @@ class Scraper(object):
         
         #run the scraper
         self._get_zip_data()
-        
+
+    def _get_property_summary(self,soup):
+        """
+        Needed to change this function a little from the scaper since
+        Otherwise it hangs on some functions
+        Given a soup it populates the results dic and returns it
+        """
+        def parse_property(regex, property_):
+            try:
+                results[property_] = re.findall(regex, prop_summary)[0]
+            except IndexError:
+                results[property_] = None
+        def parse_propetry2(string,property_):
+            try:
+                results[property_] = prop_summary.split(string)[1].split('"')[1]
+            except IndexError:
+                results[property_] = None
+
+        prop_summary = soup.find("div", class_=constants.PROP_SUMMARY_CLASS)
+        prop_summary = prop_summary.text
+        results = {}
+        parse_property(r"([\d\.]+) beds?", "bedrooms")
+        parse_property(r"([\d\.]+) baths?", "bathrooms")
+        parse_property(r"([\d,\.]+) sqft", "sqft")
+        #these to lines don't always work it seems to hang
+        #parse_property(r"((?:[A-Z]\w+ ?){1,}), [A-Z]{2}", "city")
+        #parse_property(r"(?:[A-Z]\w+ ?){1,}, ([A-Z]{2})", "state")
+        parse_propetry2('"city":','city')
+        parse_propetry2('"state":','state')
+        parse_property(r"[A-Z]{2} (\d{5}-?(?:\d{4})?)", "zipcode")
+        return results
+
     def _get_price_tax_url(self, soup):
         """
         Given the soup of the housing details html this will find and 
@@ -125,7 +158,7 @@ class Scraper(object):
         specified this function will throw an error.
         """
         soup = BeautifulSoup(html, 'html.parser')
-        results = scraper._get_property_summary(soup)
+        results = self._get_property_summary(soup)
         results['url'] = url
         facts = scraper._parse_facts(scraper._get_fact_list(soup))
         results.update(**facts)
@@ -156,7 +189,7 @@ class Scraper(object):
                     print url
                     html = self._tor.request(url)
                     self._housing_description.insert(self._scrape(html,url))
-                    sleep(1)
+                    #sleep(1)
                 except:
                     ## scrape failed
                     ## missing data so just add url to not try to add again
@@ -172,6 +205,7 @@ class Scraper(object):
         while(self._has_next(soup)):
             url = 'http://www.zillow.com/homes/recently_sold/'+str(self._zip_code)+'_rb/'+str(page)+'_p'
             r = self._tor.request(url)
+            print 'Url received: ', url
             soup = BeautifulSoup(r)
             self._get_house_links(soup)
             page += 1
