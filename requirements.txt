@@ -1,0 +1,9 @@
+beautifulsoup4==4.4.1
+fake-useragent==0.0.8
+mechanize==0.2.5
+pymongo==3.0.3
+PySocks==1.5.6
+requests==2.8.1
+scrapezillow==0.5
+stem==1.4.0
+wheel==0.26.0

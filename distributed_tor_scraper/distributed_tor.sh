@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Nworkers=50
+Nworkers=10
 base_socks_port=9050
 base_control_port=8118
 password=16:CD7A0F54BD5C0B22608D19978758FF0491B142F42974123180090E62C2

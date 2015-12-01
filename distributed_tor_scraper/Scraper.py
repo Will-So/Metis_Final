@@ -203,7 +203,7 @@ class Scraper(object):
         page = 1
         print 'Zip code:',self._zip_code,' started.'
         while(self._has_next(soup)):
-            url = 'http://www.zillow.com/homes/recently_sold/'+str(self._zip_code)+'_rb/'+str(page)+'_p'
+            url = 'http://www.zillow.com/homes/for_rent/'+str(self._zip_code)+'_rb/'+str(page)+'_p'
             r = self._tor.request(url)
             print 'Url received: ', url
             soup = BeautifulSoup(r)
