@@ -31,8 +31,8 @@ class UseTor(object):
         """
         Sets the date time used to change IP ever so often
         """
-        ##change every 10 to 30 mins
-        self._next_time = datetime.datetime.now() + datetime.timedelta(0,random.randint(600,1800))
+        ##change every 30 to 60 mins
+        self._next_time = datetime.datetime.now() + datetime.timedelta(0,random.randint(1800,3600))
 
         
     def _new_ip(self):

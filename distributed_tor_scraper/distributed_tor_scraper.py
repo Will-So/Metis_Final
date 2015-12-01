@@ -1,4 +1,4 @@
-#!~/anaconda/bin/python
+#!/home/andy/anaconda/bin/python
 import random
 import sys
 from multiprocessing import Process,Queue
@@ -47,14 +47,15 @@ class Worker(Process):
                 #which will update the housing database
                 Scraper(self.opener,self.zip_code)
                 self.coll.update({'zip_code':self.zip_code}, {'$set': {'finished':1}})
-                self.conn.close()
 
             except:
                 print "Unexpected error:", sys.exc_info()[0]
                 pass # leave this element for the next cycle
+        #when process is finished close the database connection
+        self.conn.close()
 
 class Discovery:
-    NWorkers = 100
+    NWorkers = 0
     SocksProxyBasePort = 9050
     BaseControlPort = 8118
     Contention = 10000
@@ -89,9 +90,6 @@ class Discovery:
 
         for w in self.workers:
             w.start()
-
-        for w in self.workers:
-            w.join()
 
 def main(NWorkers = 100):
     print type(NWorkers),NWorkers
